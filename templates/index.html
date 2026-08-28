@@ -4,9 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Machine Learning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bat.css') }}">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            line-height: 1.6;
+            color: #1e1e20;
+        }
+
+        .encabezado {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bat-zona {
+            width: 200px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Machine Learning</h1>
+    <div class="encabezado">
+        <div class="bat-zona">
+            <div class="bat"></div>
+        </div>
+        <h1>Machine Learning</h1>
+    </div>
+
     <p>
         Machine Learning is a branch of artificial inteligence that allows computers learn patterns
         througt data, without being programed explicit for every task.       
