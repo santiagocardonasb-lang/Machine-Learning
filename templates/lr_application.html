@@ -1,6 +1,265 @@
 {% extends "base.html" %}
+
 {% block title %}Linear Regression Application{% endblock %}
+
 {% block content %}
 <h1 class="page-title">Linear Regression Application</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+<p class="lead mb-4">Predicting product sales from advertising investment.</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. Problem context</h2>
+
+        <p>
+            A consumer goods company invests a different amount in advertising every
+            month and needs to know how much of that spending turns into sales. Without
+            a model, the budget is decided by intuition, and there is no way to justify
+            raising or cutting it.
+        </p>
+
+        <dl class="row mb-0 small">
+            <dt class="col-sm-4">Phenomenon analysed</dt>
+            <dd class="col-sm-8">
+                How monthly advertising investment affects the number
+                of units sold of a product.
+            </dd>
+
+            <dt class="col-sm-4">What the data represents</dt>
+            <dd class="col-sm-8">
+                Each record is one month: how much was invested in
+                advertising and how many units were sold that month.
+            </dd>
+
+            <dt class="col-sm-4">Why Linear Regression</dt>
+            <dd class="col-sm-8">
+                Both variables are quantitative and the relationship
+                between them is approximately linear, which is exactly the situation the
+                algorithm is designed for.
+            </dd>
+
+            <dt class="col-sm-4">Value being predicted</dt>
+            <dd class="col-sm-8">
+                The units sold expected for a given advertising investment.
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">2. Variables</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Role</th>
+                        <th scope="col">Variable</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row">Independent (X)</th>
+                        <td>{{ info.feature_name }}</td>
+                        <td>{{ info.feature_unit }}</td>
+                        <td>Quantitative, continuous</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Dependent (Y)</th>
+                        <td>{{ info.target_name }}</td>
+                        <td>{{ info.target_unit }}</td>
+                        <td>Quantitative, discrete</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">3. Dataset</h2>
+
+        <p>
+            <span class="badge text-bg-success fs-6">
+                {{ info.records }} records
+            </span>
+        </p>
+
+        <dl class="row small">
+            <dt class="col-sm-4">Independent variable</dt>
+            <dd class="col-sm-8">
+                {{ info.feature_name }} ({{ info.feature_unit }}),
+                from {{ info.min_investment }} to {{ info.max_investment }}
+            </dd>
+
+            <dt class="col-sm-4">Dependent variable</dt>
+            <dd class="col-sm-8">
+                {{ info.target_name }} ({{ info.target_unit }})
+            </dd>
+
+            <dt class="col-sm-4">Source</dt>
+            <dd class="col-sm-8">{{ info.source }}</dd>
+        </dl>
+
+        <h3 class="h6 mt-4">First 10 records</h3>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Advertising investment</th>
+                        <th scope="col">Units sold</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in sample %}
+                    <tr>
+                        <td>{{ row.advertising_investment }}</td>
+                        <td>{{ row.units_sold }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">4. Data visualization</h2>
+
+        <img
+            src="data:image/png;base64,{{ chart }}"
+            class="img-fluid"
+            alt="Scatter plot of advertising investment against units sold, with the regression line"
+        >
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">5. The trained model</h2>
+
+        <p>
+            Trained with scikit-learn on the {{ info.records }} records above.
+            The line it found is:
+        </p>
+
+        <p class="fs-5 text-center my-4">
+            <code>
+                units sold = {{ "%.1f"|format(info.intercept) }}
+                + {{ "%.1f"|format(info.slope) }} &times; investment
+            </code>
+        </p>
+
+        <div class="row g-3 text-center">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3">
+                    <div class="small text-muted">Intercept</div>
+                    <div class="fs-5 fw-semibold">
+                        {{ "%.1f"|format(info.intercept) }}
+                    </div>
+                    <div class="small text-muted">
+                        units with no advertising
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3">
+                    <div class="small text-muted">Slope</div>
+                    <div class="fs-5 fw-semibold">
+                        {{ "%.1f"|format(info.slope) }}
+                    </div>
+                    <div class="small text-muted">
+                        units per million invested
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3">
+                    <div class="small text-muted">R&sup2;</div>
+                    <div class="fs-5 fw-semibold">
+                        {{ "%.3f"|format(info.r2) }}
+                    </div>
+                    <div class="small text-muted">
+                        of the variation explained
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">6. Make a prediction</h2>
+
+        <p class="small text-muted">
+            Enter an advertising investment and the model will estimate the units sold.
+        </p>
+
+        <form method="post" class="row g-2 align-items-end">
+
+            <div class="col-sm-7">
+                <label for="investment" class="form-label">
+                    Advertising investment ({{ info.feature_unit }})
+                </label>
+
+                <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    required
+                    class="form-control {% if error %}is-invalid{% endif %}"
+                    id="investment"
+                    name="investment"
+                    value="{{ entered_value }}"
+                    placeholder="For example: 12.5"
+                >
+            </div>
+
+            <div class="col-sm-5">
+                <button type="submit" class="btn btn-brand w-100">
+                    Predict
+                </button>
+            </div>
+
+        </form>
+
+        {% if error %}
+        <div class="alert alert-danger mt-3 mb-0">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if prediction is not none %}
+        <div class="alert alert-success mt-3 mb-0">
+
+            <h3 class="h6 mb-1">Estimated sales</h3>
+
+            <p class="fs-4 fw-semibold mb-1">
+                {{ "%.0f"|format(prediction) }} units
+            </p>
+
+            <p class="small mb-0">
+                For an investment of {{ entered_value }} {{ info.feature_unit }},
+                generated by the trained Linear Regression model.
+            </p>
+
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
 {% endblock %}

@@ -1,6 +1,66 @@
 {% extends "base.html" %}
+
 {% block title %}Use Case {{ number }}{% endblock %}
+
 {% block content %}
-<h1 class="page-title">Use Case {{ number }}</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+<p class="text-uppercase text-muted small mb-1">Use Case {{ number }}</p>
+<h1 class="page-title">{{ case.name }}</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Problem context</h2>
+        <p class="card-text mb-0">{{ case.context }}</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h6 card-title text-brand">Data that could be used</h2>
+                <p class="card-text small mb-0">{{ case.data }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h6 card-title text-brand">What the model should do</h2>
+                <p class="card-text small mb-0">{{ case.goal }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h6 card-title text-brand">Type of Machine Learning</h2>
+                <p class="card-text small mb-0">{{ case.ml_type }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h6 card-title text-brand">Potential benefit</h2>
+                <p class="card-text small mb-0">{{ case.benefit }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav class="mt-5">
+    <ul class="pagination">
+        {% for n in [1, 2, 3, 4] %}
+        <li class="page-item {% if n == number %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('use_case', number=n) }}">
+                Use Case {{ n }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+
 {% endblock %}
