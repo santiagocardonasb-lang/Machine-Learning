@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Types of Machine Learning{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Types of Machine Learning</h1>
+
+<p class="lead mb-4">
+    Machine Learning algorithms are grouped by the kind of information they learn
+    from and by the way they receive feedback about their answers.
+</p>
+
+<div class="accordion" id="typesAccordion">
+
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#supervised">
+                Supervised Learning
+            </button>
+        </h2>
+        <div id="supervised" class="accordion-collapse collapse show"
+             data-bs-parent="#typesAccordion">
+            <div class="accordion-body">
+                <h3 class="h6 text-brand">Definition</h3>
+                <p>
+                    The model is trained with labelled data: every input comes with its
+                    correct answer. The algorithm learns the relationship between the two
+                    so it can answer for new inputs.
+                </p>
+                <h3 class="h6 text-brand">Main characteristics</h3>
+                <ul>
+                    <li>Requires a historical dataset with known results.</li>
+                    <li>Its accuracy can be measured by comparing predictions against
+                        the real answers.</li>
+                    <li>Labelling the data is often the most expensive part of the work.</li>
+                </ul>
+                <h3 class="h6 text-brand">Problems it can solve</h3>
+                <ul class="mb-0">
+                    <li><strong>Regression:</strong> predicting a number, such as sales,
+                        prices or temperatures.</li>
+                    <li><strong>Classification:</strong> assigning a category, such as
+                        spam or not spam, fraud or legitimate.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#unsupervised">
+                Unsupervised Learning
+            </button>
+        </h2>
+        <div id="unsupervised" class="accordion-collapse collapse"
+             data-bs-parent="#typesAccordion">
+            <div class="accordion-body">
+                <h3 class="h6 text-brand">Definition</h3>
+                <p>
+                    The data has no labels. The model explores it on its own, looking for
+                    hidden structures, groups or anomalies that nobody pointed out in
+                    advance.
+                </p>
+                <h3 class="h6 text-brand">Main characteristics</h3>
+                <ul>
+                    <li>Needs no labelled data, so it is cheaper to get started.</li>
+                    <li>There is no single correct answer to compare against.</li>
+                    <li>Its results usually need a human expert to interpret them.</li>
+                </ul>
+                <h3 class="h6 text-brand">Problems it can solve</h3>
+                <ul class="mb-0">
+                    <li><strong>Clustering:</strong> segmenting customers by purchase
+                        behaviour.</li>
+                    <li><strong>Anomaly detection:</strong> spotting transactions that
+                        differ from the usual pattern.</li>
+                    <li><strong>Dimensionality reduction:</strong> simplifying datasets
+                        with hundreds of variables.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#reinforcement">
+                Reinforcement Learning
+            </button>
+        </h2>
+        <div id="reinforcement" class="accordion-collapse collapse"
+             data-bs-parent="#typesAccordion">
+            <div class="accordion-body">
+                <h3 class="h6 text-brand">Definition</h3>
+                <p>
+                    An agent learns by trying out actions inside an environment and
+                    receiving rewards or penalties. Over many attempts it discovers the
+                    strategy that maximizes the reward.
+                </p>
+                <h3 class="h6 text-brand">Main characteristics</h3>
+                <ul>
+                    <li>Learns by trial and error, not from a fixed dataset.</li>
+                    <li>The feedback can arrive long after the action that caused it.</li>
+                    <li>It needs an environment where the agent can practise safely.</li>
+                </ul>
+                <h3 class="h6 text-brand">Problems it can solve</h3>
+                <ul class="mb-0">
+                    <li>Robots that learn to walk or to grab objects.</li>
+                    <li>Game engines such as AlphaGo.</li>
+                    <li>Traffic light control and energy management.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

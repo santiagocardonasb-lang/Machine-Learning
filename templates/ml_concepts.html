@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Machine Learning Concepts{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Machine Learning Concepts</h1>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What is Machine Learning?</h2>
+                <p class="card-text mb-0">
+                    Machine Learning is a branch of artificial intelligence that allows
+                    computers to learn patterns from data, without being explicitly
+                    programmed for every task. Instead of writing the rules by hand, the
+                    programmer supplies examples and the algorithm infers the rules.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What is its main purpose?</h2>
+                <p class="card-text mb-0">
+                    To build models that generalize. After learning from past examples, a
+                    model can make useful predictions about data it has never seen before.
+                    That is the difference between memorizing and learning.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">From data to predictions</h2>
+
+<div class="row g-3 mb-5">
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Step 1</span>
+                <h3 class="h6 text-brand">Data</h3>
+                <p class="card-text small mb-0">
+                    Historical observations of the phenomenon. Each record pairs an
+                    input with the result that followed it.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Step 2</span>
+                <h3 class="h6 text-brand">Training</h3>
+                <p class="card-text small mb-0">
+                    The algorithm goes through the data looking for the pattern that
+                    best explains the results it observes.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Step 3</span>
+                <h3 class="h6 text-brand">Model</h3>
+                <p class="card-text small mb-0">
+                    The result of the training: a mathematical representation of the
+                    pattern that was found.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Step 4</span>
+                <h3 class="h6 text-brand">Prediction</h3>
+                <p class="card-text small mb-0">
+                    The trained model receives a new input and returns the result it
+                    expects for it.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-5">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Why data is the key ingredient</h2>
+        <ul class="mb-0">
+            <li><strong>Quantity.</strong> A few records only show noise; a large set
+                reveals the underlying pattern.</li>
+            <li><strong>Quality.</strong> Wrong or missing values teach the model the
+                wrong lesson. Garbage in, garbage out.</li>
+            <li><strong>Representativeness.</strong> The data must cover every situation
+                the model will face in production.</li>
+            <li><strong>Relevance.</strong> The variables must have a real connection
+                with what is being predicted.</li>
+        </ul>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">Everyday examples</h2>
+
+<div class="list-group">
+    <div class="list-group-item">
+        <strong class="text-brand">Spam filters.</strong>
+        The mail client learns which messages users mark as spam and applies that
+        pattern to new mail.
+    </div>
+    <div class="list-group-item">
+        <strong class="text-brand">Streaming recommendations.</strong>
+        The platform suggests content based on what similar users watched.
+    </div>
+    <div class="list-group-item">
+        <strong class="text-brand">House price estimation.</strong>
+        From area, location and age, the model estimates a market price.
+    </div>
+    <div class="list-group-item">
+        <strong class="text-brand">Voice assistants.</strong>
+        Thousands of recordings teach the model to turn audio into text.
+    </div>
+    <div class="list-group-item">
+        <strong class="text-brand">Sales forecasting.</strong>
+        Exactly what this application does: estimating sales from advertising
+        investment.
+    </div>
+</div>
+
+{% endblock %}
