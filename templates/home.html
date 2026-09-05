@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="p-5 mb-5 rounded-3 bg-white">
+    <h1 class="display-5 fw-bold text-brand">Data with Roots</h1>
+    <p class="fs-5 col-lg-9">
+        A web application that explains the fundamental concepts of Machine
+        Learning, analyzes four use cases from different industries, and
+        implements a Simple Linear Regression model that predicts product
+        sales from advertising investment.
+    </p>
+    <p class="text-muted">
+        Built with Python, Flask, scikit-learn and Bootstrap.
+    </p>
+    <a href="{{ url_for('lr_application') }}" class="btn btn-brand btn-lg">
+        Try the prediction model
+    </a>
+</div>
+
+<h2 class="h4 mb-3">Explore the application</h2>
+
+<div class="row g-4">
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title text-brand">Machine Learning Concepts</h3>
+                <p class="card-text small text-muted">
+                    What Machine Learning is, what it is for, and why data sits
+                    at the center of it.
+                </p>
+                <a href="{{ url_for('ml_concepts') }}" class="stretched-link small">Read the concepts</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title text-brand">Types of Learning</h3>
+                <p class="card-text small text-muted">
+                    Supervised, unsupervised and reinforcement learning
+                    compared side by side.
+                </p>
+                <a href="{{ url_for('ml_types') }}" class="stretched-link small">Compare the types</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title text-brand">Use Cases</h3>
+                <p class="card-text small text-muted">
+                    Four real problems from banking, retail, industry and
+                    healthcare.
+                </p>
+                <a href="{{ url_for('use_case', number=1) }}" class="stretched-link small">See the use cases</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title text-brand">Linear Regression</h3>
+                <p class="card-text small text-muted">
+                    The theory behind the algorithm and a working model trained
+                    on 600 records.
+                </p>
+                <a href="{{ url_for('lr_concepts') }}" class="stretched-link small">Start with the concepts</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

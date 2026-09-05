@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Linear Regression Concepts{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Linear Regression Concepts</h1>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What is Linear Regression?</h2>
+                <p class="card-text mb-0">
+                    A supervised learning algorithm that describes the relationship
+                    between two quantitative variables with a straight line. Once the
+                    line is found, it can be used to estimate the value of one variable
+                    from the other.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What problems does it solve?</h2>
+                <p class="card-text mb-0">
+                    Problems where the answer is a number, not a category: estimating
+                    sales, prices, consumption, temperatures or delivery times. If the
+                    answer were a category, the problem would call for classification
+                    instead.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">The two variables</h2>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">X</span>
+                <h3 class="h6 text-brand">Independent variable</h3>
+                <p class="card-text small mb-0">
+                    The input. The value that is known and that is used to make the
+                    prediction. It is also called the predictor. In this application it
+                    is the advertising investment.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Y</span>
+                <h3 class="h6 text-brand">Dependent variable</h3>
+                <p class="card-text small mb-0">
+                    The output. The value the model tries to predict, and whose
+                    behaviour depends on X. In this application it is the number of
+                    units sold.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Relationship between the variables</h2>
+        <p>
+            Linear Regression assumes the relationship is linear: when X grows, Y grows
+            or shrinks at a roughly constant rate. That relationship can be:
+        </p>
+        <ul class="mb-0">
+            <li><strong>Positive:</strong> more advertising investment, more sales.</li>
+            <li><strong>Negative:</strong> a higher price, fewer units sold.</li>
+            <li><strong>Non-existent:</strong> the points show no pattern, and a straight
+                line explains nothing.</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">The regression line</h2>
+        <p>
+            The straight line that passes as close as possible to every observed point.
+            The algorithm finds it by minimizing the sum of the squared distances between
+            each real point and the line. Its equation is:
+        </p>
+        <p class="fs-4 text-center my-4"><code>Y = a + b &middot; X</code></p>
+        <ul class="mb-0">
+            <li><strong>a - the intercept.</strong> The value of Y when X is zero: where
+                the line crosses the vertical axis.</li>
+            <li><strong>b - the slope.</strong> How much Y changes for every unit that X
+                increases. It is the steepness of the line.</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-5">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Prediction</h2>
+        <p class="mb-0">
+            Once the line is known, predicting means replacing X in the equation with a
+            new value and reading the Y that comes out. The result is an estimate, not a
+            certainty: the real points lie around the line, not exactly on it.
+        </p>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">A simple example</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p>
+            A shop records how many ice creams it sells depending on the temperature of
+            the day:
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Temperature (&deg;C) - X</th>
+                        <th scope="col">Ice creams sold - Y</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>20</td><td>40</td></tr>
+                    <tr><td>24</td><td>58</td></tr>
+                    <tr><td>28</td><td>79</td></tr>
+                    <tr><td>32</td><td>101</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="mb-0">
+            Every extra degree adds roughly five ice creams, so the fitted line is close
+            to <code>Y = -62 + 5.1 &middot; X</code>. For a day of 30 &deg;C the model
+            predicts about 91 ice creams - a value that was never in the table, but that
+            follows from the pattern the data shows.
+        </p>
+    </div>
+</div>
+
+{% endblock %}
