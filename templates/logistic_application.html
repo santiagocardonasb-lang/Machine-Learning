@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block title %}Logistic Regression Application{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Logistic Regression Application</h1>
+
+<p class="lead mb-4">
+    Classifying whether a month reached its sales goal.
+</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. Problem context</h2>
+
+        <p>
+            A consumer goods company sets a monthly goal of {{ info.monthly_goal }} units for
+            one of its products. Every month it invests a different amount in advertising, and
+            the marketing team needs to know in advance whether that investment is enough to
+            reach the goal, so the budget can be corrected before the month ends.
+        </p>
+
+        <dl class="row mb-0 small">
+
+            <dt class="col-sm-4">What is being analysed</dt>
+            <dd class="col-sm-8">
+                Whether the advertising investment of a month is enough to
+                reach the sales goal.
+            </dd>
+
+            <dt class="col-sm-4">What the data represents</dt>
+            <dd class="col-sm-8">
+                Each record is one month: the amount invested in advertising
+                and whether the goal was reached.
+            </dd>
+
+            <dt class="col-sm-4">Independent variable</dt>
+            <dd class="col-sm-8">
+                {{ info.feature_name }}, in {{ info.feature_unit }}.
+            </dd>
+
+            <dt class="col-sm-4">Target variable</dt>
+            <dd class="col-sm-8">
+                {{ info.target_name }}, binary.
+            </dd>
+
+            <dt class="col-sm-4">Possible classes</dt>
+            <dd class="col-sm-8">
+                0 = {{ info.classes[0] }} · 1 = {{ info.classes[1] }}
+            </dd>
+
+            <dt class="col-sm-4">What the model classifies</dt>
+            <dd class="col-sm-8">
+                Given an advertising investment, whether that month belongs
+                to the group that reaches the goal or to the group that misses it.
+            </dd>
+
+        </dl>
+    </div>
+</div>
+
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">2. Dataset</h2>
+
+        <p>
+            <span class="badge text-bg-success fs-6">
+                {{ info.records }} records
+            </span>
+
+            <span class="badge text-bg-secondary fs-6">
+                Loaded from CSV with pandas
+            </span>
+        </p>
+
+        <div class="table-responsive mb-3">
+
+            <table class="table table-bordered mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Role</th>
+                        <th scope="col">Column</th>
+                        <th scope="col">Meaning</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <th scope="row">Independent (X)</th>
+
+                        <td>
+                            <code>advertising_investment</code>
+                        </td>
+
+                        <td>
+                            {{ info.feature_name }} in {{ info.feature_unit }},
+                            from {{ info.min_investment }} to {{ info.max_investment }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Target (Y)</th>
+
+                        <td>
+                            <code>goal_reached</code>
+                        </td>
+
+                        <td>
+                            {{ info.target_name }}, binary
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Class 0</th>
+
+                        <td>
+                            <code>0</code>
+                        </td>
+
+                        <td>
+                            {{ info.class_meaning[0] }}
+
+                            <span class="badge text-bg-light">
+                                {{ info.class_counts[0] }} months
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Class 1</th>
+
+                        <td>
+                            <code>1</code>
+                        </td>
+
+                        <td>
+                            {{ info.class_meaning[1] }}
+
+                            <span class="badge text-bg-light">
+                                {{ info.class_counts[1] }} months
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p class="small text-muted mb-3">
+            <strong>Source.</strong> {{ info.source }}
+        </p>
+
+
+        <h3 class="h6">First 10 records</h3>
+
+        <div class="table-responsive">
+
+            <table class="table table-sm table-striped mb-0">
+
+                <thead>
+
+                    <tr>
+                        <th scope="col">advertising_investment</th>
+                        <th scope="col">goal_reached</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for row in sample %}
+
+                    <tr>
+                        <td>{{ row.advertising_investment }}</td>
+                        <td>{{ row.goal_reached }}</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            3. Data visualization
+        </h2>
+
+        <img
+            src="data:image/png;base64,{{ chart }}"
+            class="img-fluid"
+            alt="Observations grouped by class, with the sigmoid curve and the classification threshold"
+        >
+
+        <p class="small text-muted mt-3 mb-0">
+            Each point is one month, placed at its advertising investment and coloured by its
+            class. The dark curve is the probability of reaching the goal estimated by the
+            model, and the dashed line is the 0.5 threshold that separates the two classes.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            4. Train / test split
+        </h2>
+
+        <p>
+            The dataset is divided with <code>train_test_split()</code> from scikit-learn,
+            using <code>stratify</code> so both parts keep the same proportion of classes.
+        </p>
+
+        <div class="row g-3 text-center">
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3">
+
+                    <div class="small text-muted">
+                        Training data — 80%
+                    </div>
+
+                    <div class="fs-4 fw-semibold">
+                        {{ info.training_records }}
+                    </div>
+
+                    <div class="small text-muted">
+                        records the model learns from
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3">
+
+                    <div class="small text-muted">
+                        Testing data — 20%
+                    </div>
+
+                    <div class="fs-4 fw-semibold">
+                        {{ info.testing_records }}
+                    </div>
+
+                    <div class="small text-muted">
+                        records held back to measure performance
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            5. The model
+        </h2>
+
+        <p>
+            Implemented with <code>LogisticRegression</code> from scikit-learn and trained on
+            the {{ info.training_records }} training records. The complete process is:
+        </p>
+
+        <p class="text-center my-4">
+            <code>
+                CSV → pandas → X and y → 80/20 split → training → predictions → evaluation
+            </code>
+        </p>
+
+        <p class="mb-0">
+            Every classification shown below is produced by this trained model.
+            No result is hard-coded.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            6. Classify a new month
+        </h2>
+
+        <p class="small text-muted">
+            Enter an advertising investment and the model will classify whether that month
+            reaches the sales goal.
+        </p>
+
+
+        <form method="post" class="row g-2 align-items-end">
+
+            <div class="col-sm-7">
+
+                <label for="investment" class="form-label">
+                    Advertising investment ({{ info.feature_unit }})
+                </label>
+
+                <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    required
+                    class="form-control {% if error %}is-invalid{% endif %}"
+                    id="investment"
+                    name="investment"
+                    value="{{ entered_value }}"
+                    placeholder="For example: 27.5"
+                >
+
+            </div>
+
+
+            <div class="col-sm-5">
+
+                <button
+                    type="submit"
+                    class="btn btn-brand w-100"
+                >
+                    Classify
+                </button>
+
+            </div>
+
+        </form>
+
+
+        {% if error %}
+
+        <div class="alert alert-danger mt-3 mb-0">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        {% if result %}
+
+        <div class="alert {% if result.value == 1 %}alert-success{% else %}alert-warning{% endif %} mt-3 mb-0">
+
+            <h3 class="h6 mb-1">
+                Predicted class
+            </h3>
+
+            <p class="fs-4 fw-semibold mb-1">
+                {{ result.value }} — {{ result.label }}
+            </p>
+
+            <p class="mb-1">
+                {{ result.meaning }}
+            </p>
+
+            <p class="small mb-0">
+
+                Probability of reaching the goal estimated by the model:
+
+                <strong>
+                    {{ "%.1f"|format(result.probability * 100) }}%
+                </strong>.
+
+                For an investment of
+                {{ entered_value }} {{ info.feature_unit }}.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% endblock %}

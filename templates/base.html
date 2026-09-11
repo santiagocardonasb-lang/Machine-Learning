@@ -60,10 +60,25 @@
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Supervised
                     </a>
+                    
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><h6 class="dropdown-header">Linear Regression</h6></li>
                         <li><a class="dropdown-item" href="{{ url_for('lr_concepts') }}">Concepts</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('lr_application') }}">Application</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><h6 class="dropdown-header">Logistic Regression</h6></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logistic_concepts') }}">Concepts</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logistic_application') }}">Application</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logistic_metrics') }}">Evaluation Metrics</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><h6 class="dropdown-header">Perceptron</h6></li>
+                        <li><a class="dropdown-item" href="{{ url_for('perceptron_concepts') }}">Concepts</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('perceptron_application') }}">Application</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('perceptron_metrics') }}">Evaluation Metrics</a></li>
                     </ul>
                 </li>
 
