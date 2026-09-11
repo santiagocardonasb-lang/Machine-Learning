@@ -1,6 +1,133 @@
 {% extends "base.html" %}
-{% block title %}Logistic Regression Concepts{% endblock %}
+
+{% block title %}Perceptron Concepts{% endblock %}
+
 {% block content %}
-<h1 class="page-title">Logistic Regression Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+<h1 class="page-title">Perceptron Concepts</h1>
+
+<p class="lead mb-4">
+    The Perceptron is the classification algorithm assigned to this group. It is the oldest
+    artificial neuron and the foundation of modern neural networks.
+</p>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">Definition</h2>
+                <p class="card-text mb-0">
+                    A linear classifier proposed by Frank Rosenblatt in 1958. It receives
+                    several numeric inputs, multiplies each one by a weight, adds the results
+                    and decides a class depending on whether that sum passes a threshold. It is
+                    the simplest model that can be called a neural network: a single neuron.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">How it works</h2>
+                <p class="card-text mb-0">
+                    It starts with random weights and goes through the training examples one by
+                    one. Every time it gets one wrong, it adjusts the weights slightly in the
+                    direction that would have produced the right answer. Repeating this over
+                    the whole dataset moves the separating boundary until it leaves each class
+                    on its own side.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">The decision it makes</h2>
+        <p>
+            For a campaign with a budget, a duration and a number of channels, the neuron
+            computes:
+        </p>
+        <p class="text-center fs-5 my-4">
+            <code>sum = w1 · budget + w2 · duration + w3 · channels + b</code>
+        </p>
+        <p class="mb-0">
+            If the sum is positive it answers class 1, otherwise class 0. The weights
+            <code>w1</code>, <code>w2</code> and <code>w3</code> are what the algorithm learns:
+            they measure how much each variable pushes the campaign towards being profitable.
+        </p>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">Characteristics, advantages and limitations</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 text-brand">Main characteristics</h3>
+                <ul class="small mb-0">
+                    <li>It is a supervised, linear and binary classifier.</li>
+                    <li>It learns online: it corrects itself example by example.</li>
+                    <li>It answers with a class, never with a probability.</li>
+                    <li>It needs the variables on a comparable scale.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 text-brand">Advantages</h3>
+                <ul class="small mb-0">
+                    <li>Very fast to train, even with many records.</li>
+                    <li>Uses little memory: it only stores one weight per variable.</li>
+                    <li>Easy to interpret, since each weight shows the influence of a variable.</li>
+                    <li>Can keep learning as new data arrives, without retraining from scratch.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 text-brand">Limitations</h3>
+                <ul class="small mb-0">
+                    <li>Only separates classes that a straight boundary can divide.</li>
+                    <li>If the classes are not linearly separable, it never converges.</li>
+                    <li>It gives no probability, so there is no measure of confidence.</li>
+                    <li>It is sensitive to the scale and to the order of the examples.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Problems it can solve</h2>
+        <p class="mb-0">
+            Binary classification problems where the two groups can be separated by a straight
+            boundary: filtering spam from legitimate mail, telling apart defective and correct
+            pieces on a production line, deciding whether a transaction deserves review, or the
+            case implemented here, separating profitable campaigns from unprofitable ones.
+            For problems where the boundary is curved, the Perceptron falls short and a
+            multi-layer network or another algorithm is needed.
+        </p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">A real classification problem</h2>
+        <p class="mb-0">
+            A factory inspects bottles at the end of the line. For every bottle it measures the
+            weight, the height and the thickness of the glass, and needs to decide whether it
+            passes quality control or goes to the rejection bin. The three measurements are
+            numeric, the answer is binary, and correct bottles cluster around their nominal
+            values while defective ones drift away from them. A Perceptron learns that boundary
+            in seconds and classifies every new bottle at the speed the line requires.
+        </p>
+    </div>
+</div>
+
 {% endblock %}
