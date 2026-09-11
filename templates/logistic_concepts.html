@@ -1,6 +1,196 @@
 {% extends "base.html" %}
+
 {% block title %}Logistic Regression Concepts{% endblock %}
+
 {% block content %}
 <h1 class="page-title">Logistic Regression Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+
+<p class="lead mb-4">
+    The concepts needed to understand how the algorithm works before reaching its
+    practical implementation.
+</p>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What is Logistic Regression?</h2>
+                <p class="card-text mb-0">
+                    A supervised learning algorithm that estimates the probability that an
+                    observation belongs to one of two classes. Despite its name, it does not
+                    predict a number: it predicts a category.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">Why is it a classification algorithm?</h2>
+                <p class="card-text mb-0">
+                    Because its final answer is a class, not a quantity. It calculates a
+                    probability between 0 and 1 and then compares it against a threshold to
+                    decide which of the two classes to assign. The number is only an
+                    intermediate step.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">What is binary classification?</h2>
+        <p class="mb-0">
+            A classification problem with exactly two possible outcomes. Every observation
+            belongs to one class or the other, never to both and never to a third. Typical
+            examples are spam or not spam, fraud or legitimate, and the case implemented in
+            this application: the monthly sales goal was reached or it was not.
+        </p>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">The variables</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">X</span>
+                <h3 class="h6 text-brand">Independent variable</h3>
+                <p class="card-text small mb-0">
+                    The input the model uses to decide. In this application it is the monthly
+                    advertising investment, measured in millions of COP.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">Y</span>
+                <h3 class="h6 text-brand">Dependent or target variable</h3>
+                <p class="card-text small mb-0">
+                    The class the model tries to assign. Here it is whether the month reached
+                    its sales goal. It only takes the values 0 and 1.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <span class="badge text-bg-secondary mb-2">0 / 1</span>
+                <h3 class="h6 text-brand">Classes or labels</h3>
+                <p class="card-text small mb-0">
+                    The two possible values of the target variable. In this application,
+                    0 means the goal was not reached and 1 means it was.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Probability of belonging to a class</h2>
+
+        <p>
+            The model does not answer yes or no straight away. First it calculates how likely
+            it is that the observation belongs to class 1, as a value between 0 and 1. That
+            probability comes from the sigmoid function, an S-shaped curve that squeezes any
+            number into that range.
+        </p>
+
+        <p class="mb-0">
+            A month with an investment of 40 million might get a probability of 0.95, and one
+            with 5 million a probability of 0.03. The closer to the middle, the less certain
+            the model is.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Classification threshold</h2>
+
+        <p>
+            The value that separates one class from the other. By default it is
+            <strong>0.5</strong>: if the probability reaches it, the model answers class 1,
+            otherwise class 0.
+        </p>
+
+        <p class="mb-0">
+            The threshold can be moved when one mistake costs more than the other. Raising it
+            makes the model more demanding before announcing that the goal was reached,
+            which reduces false positives but increases false negatives.
+        </p>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">Linear Regression compared with Logistic Regression</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p>
+            This application implements both algorithms over the same phenomenon, which makes
+            the difference easy to see: one predicts how many units are sold, the other
+            classifies whether the goal was met.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Linear Regression</th>
+                        <th scope="col">Logistic Regression</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row">Type of problem</th>
+                        <td>Regression</td>
+                        <td>Classification</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">What it answers</th>
+                        <td>A number</td>
+                        <td>A class</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Range of the answer</th>
+                        <td>Any value</td>
+                        <td>Only 0 or 1</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Shape of the fit</th>
+                        <td>A straight line</td>
+                        <td>An S-shaped curve, the sigmoid</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">How it is evaluated</th>
+                        <td>R squared</td>
+                        <td>Accuracy, precision, recall and F1</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">In this application</th>
+                        <td>How many units are sold in the month</td>
+                        <td>Whether the month reached the 1000 unit goal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
