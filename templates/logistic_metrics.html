@@ -1,6 +1,350 @@
 {% extends "base.html" %}
-{% block title %}Logistic Regression Concepts{% endblock %}
+
+{% block title %}Logistic Regression Evaluation Metrics{% endblock %}
+
 {% block content %}
-<h1 class="page-title">Logistic Regression Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+
+<h1 class="page-title">Logistic Regression Evaluation Metrics</h1>
+
+<p class="lead mb-4">
+    The model was evaluated on the {{ metrics.total }} records of the testing set,
+    which is 20% of the dataset and was never used during training.
+</p>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            Confusion Matrix
+        </h2>
+
+        <p class="small text-muted">
+            Each cell counts how many test months fall into that combination of real class
+            and predicted class. The diagonal holds the correct answers.
+        </p>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered text-center align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th scope="col" rowspan="2" class="align-middle">
+                            Actual class
+                        </th>
+
+                        <th scope="col" colspan="2">
+                            Predicted by the model
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">
+                            0 — {{ info.classes[0] }}
+                        </th>
+
+                        <th scope="col">
+                            1 — {{ info.classes[1] }}
+                        </th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <th scope="row" class="table-light">
+                            0 — {{ info.classes[0] }}
+                        </th>
+
+                        <td class="table-success">
+
+                            <div class="fs-4 fw-bold">
+                                {{ metrics.true_negatives }}
+                            </div>
+
+                            <div class="small">
+                                True Negatives (TN)
+                            </div>
+
+                        </td>
+
+                        <td class="table-danger">
+
+                            <div class="fs-4 fw-bold">
+                                {{ metrics.false_positives }}
+                            </div>
+
+                            <div class="small">
+                                False Positives (FP)
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th scope="row" class="table-light">
+                            1 — {{ info.classes[1] }}
+                        </th>
+
+                        <td class="table-danger">
+
+                            <div class="fs-4 fw-bold">
+                                {{ metrics.false_negatives }}
+                            </div>
+
+                            <div class="small">
+                                False Negatives (FN)
+                            </div>
+
+                        </td>
+
+                        <td class="table-success">
+
+                            <div class="fs-4 fw-bold">
+                                {{ metrics.true_positives }}
+                            </div>
+
+                            <div class="small">
+                                True Positives (TP)
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card mb-4">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            What each cell means in this problem
+        </h2>
+
+        <div class="list-group list-group-flush">
+
+
+            <div class="list-group-item px-0">
+
+                <strong class="text-brand">
+                    True Positives — {{ metrics.true_positives }} months.
+                </strong>
+
+                The model said the goal would be reached and it was.
+                The forecast was right and the budget did not need correcting.
+
+            </div>
+
+
+            <div class="list-group-item px-0">
+
+                <strong class="text-brand">
+                    True Negatives — {{ metrics.true_negatives }} months.
+                </strong>
+
+                The model said the goal would be missed and it was missed.
+                The warning was correct and the team could react in time.
+
+            </div>
+
+
+            <div class="list-group-item px-0">
+
+                <strong class="text-brand">
+                    False Positives — {{ metrics.false_positives }} months.
+                </strong>
+
+                The model announced that the goal would be reached, but it was not.
+                This is the costly mistake: the team stays calm and the month closes
+                below target with no time to correct.
+
+            </div>
+
+
+            <div class="list-group-item px-0">
+
+                <strong class="text-brand">
+                    False Negatives — {{ metrics.false_negatives }} months.
+                </strong>
+
+                The model warned that the goal would be missed, and it was actually reached.
+                A false alarm: the budget may be raised without needing to.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<h2 class="h4 mb-3">
+    Classification metrics
+</h2>
+
+
+<div class="row g-3 mb-4">
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card h-100 text-center">
+
+            <div class="card-body">
+
+                <div class="small text-muted">
+                    Accuracy
+                </div>
+
+                <div class="fs-3 fw-bold text-brand">
+                    {{ "%.1f"|format(metrics.accuracy * 100) }}%
+                </div>
+
+                <p class="small text-muted mb-0">
+                    Of every {{ metrics.total }} months, how many were classified correctly.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card h-100 text-center">
+
+            <div class="card-body">
+
+                <div class="small text-muted">
+                    Precision
+                </div>
+
+                <div class="fs-3 fw-bold text-brand">
+                    {{ "%.1f"|format(metrics.precision * 100) }}%
+                </div>
+
+                <p class="small text-muted mb-0">
+                    When the model announces that the goal is reached,
+                    how often it is right.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card h-100 text-center">
+
+            <div class="card-body">
+
+                <div class="small text-muted">
+                    Recall
+                </div>
+
+                <div class="fs-3 fw-bold text-brand">
+                    {{ "%.1f"|format(metrics.recall * 100) }}%
+                </div>
+
+                <p class="small text-muted mb-0">
+                    Of all the months that really reached the goal,
+                    how many the model found.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card h-100 text-center">
+
+            <div class="card-body">
+
+                <div class="small text-muted">
+                    F1-score
+                </div>
+
+                <div class="fs-3 fw-bold text-brand">
+                    {{ "%.1f"|format(metrics.f1 * 100) }}%
+                </div>
+
+                <p class="small text-muted mb-0">
+                    The balance between precision and recall, in a single number.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            Interpretation of the results
+        </h2>
+
+        <p>
+            The model classifies correctly
+            <strong>
+                {{ "%.1f"|format(metrics.accuracy * 100) }}%
+            </strong>
+            of the months it had never seen, which shows it learned a real pattern
+            instead of memorising the training data.
+        </p>
+
+        <p>
+            The mistakes concentrate around the border, where the advertising investment
+            is close to the amount needed to reach the goal. That is expected: two months
+            with the same investment can end on opposite sides of the target because of
+            competition, seasonality or price changes, and the model only sees the investment.
+        </p>
+
+        <p class="mb-0">
+            For this problem, a false positive is worse than a false negative.
+            Announcing that the goal will be reached when it will not leaves the team
+            without time to react, while a false alarm only leads to spending a little
+            more than necessary. That makes <strong>precision</strong> the metric to watch,
+            and it currently stands at
+            {{ "%.1f"|format(metrics.precision * 100) }}%.
+        </p>
+
+    </div>
+
+</div>
+
+
 {% endblock %}
