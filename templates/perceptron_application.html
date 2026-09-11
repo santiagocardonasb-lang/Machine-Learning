@@ -1,6 +1,232 @@
 {% extends "base.html" %}
-{% block title %}Logistic Regression Concepts{% endblock %}
+
+{% block title %}Perceptron Application{% endblock %}
+
 {% block content %}
-<h1 class="page-title">Logistic Regression Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+<h1 class="page-title">Perceptron Application</h1>
+<p class="lead mb-4">Classifying whether an advertising campaign was profitable.</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. Problem context</h2>
+        <p>
+            The marketing team runs several advertising campaigns a year, each with its own
+            budget, duration and mix of channels. Some recover the investment and some do not,
+            and today that is only known once the campaign is over. The goal is to classify a
+            campaign before launching it, so the plan can be adjusted while there is still time.
+        </p>
+        <dl class="row mb-0 small">
+            <dt class="col-sm-4">What the data represents</dt>
+            <dd class="col-sm-8">Each record is one campaign already executed, with its three
+                planning variables and the result it obtained.</dd>
+
+            <dt class="col-sm-4">Target variable</dt>
+            <dd class="col-sm-8">{{ info.target_name }}, binary.</dd>
+
+            <dt class="col-sm-4">Possible classes</dt>
+            <dd class="col-sm-8">0 = {{ info.classes[0] }} · 1 = {{ info.classes[1] }}</dd>
+
+            <dt class="col-sm-4">What the model classifies</dt>
+            <dd class="col-sm-8">Whether a campaign with a given budget, duration and number of
+                channels will recover its investment.</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">2. Dataset</h2>
+        <p>
+            <span class="badge text-bg-success fs-6">{{ info.records }} records</span>
+            <span class="badge text-bg-secondary fs-6">3 independent variables</span>
+            <span class="badge text-bg-secondary fs-6">Loaded from CSV with pandas</span>
+        </p>
+        <div class="table-responsive mb-3">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Column</th>
+                        <th scope="col">Meaning</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature in info.features %}
+                    <tr>
+                        <td><code>{{ feature.column }}</code></td>
+                        <td>{{ feature.name }}</td>
+                        <td>{{ feature.unit }}</td>
+                        <td>{{ feature.minimum }} to {{ feature.maximum }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-light">
+                        <td><code>profitable</code></td>
+                        <td>Target variable</td>
+                        <td>class 0 or 1</td>
+                        <td>binary</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="border rounded p-3">
+                    <strong>Class 0 — {{ info.classes[0] }}</strong>
+                    <span class="badge text-bg-light">{{ info.class_counts[0] }} campaigns</span>
+                    <p class="small text-muted mb-0 mt-1">{{ info.class_meaning[0] }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded p-3">
+                    <strong>Class 1 — {{ info.classes[1] }}</strong>
+                    <span class="badge text-bg-light">{{ info.class_counts[1] }} campaigns</span>
+                    <p class="small text-muted mb-0 mt-1">{{ info.class_meaning[1] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-muted mb-3"><strong>Source.</strong> {{ info.source }}</p>
+
+        <h3 class="h6">First 10 records</h3>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">budget</th>
+                        <th scope="col">duration_days</th>
+                        <th scope="col">channels</th>
+                        <th scope="col">profitable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in sample %}
+                    <tr>
+                        <td>{{ row.budget }}</td>
+                        <td>{{ row.duration_days }}</td>
+                        <td>{{ row.channels }}</td>
+                        <td>{{ row.profitable }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">3. Data visualization</h2>
+        <img src="data:image/png;base64,{{ chart }}" class="img-fluid"
+             alt="Campaigns plotted by budget and duration, with each class in its own colour">
+        <p class="small text-muted mt-3 mb-0">
+            The chart shows the two most relevant variables, budget and duration, with each
+            campaign coloured by its class. The model is trained with the three variables: the
+            number of channels cannot be shown on a two-dimensional chart at the same time.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">4. Train / test split</h2>
+        <p>
+            The same procedure used for the Logistic Regression: <code>train_test_split()</code>
+            with <code>stratify</code>, so both parts keep the proportion of classes.
+        </p>
+        <div class="row g-3 text-center">
+            <div class="col-md-6">
+                <div class="border rounded p-3">
+                    <div class="small text-muted">Training data — 80%</div>
+                    <div class="fs-4 fw-semibold">{{ info.training_records }}</div>
+                    <div class="small text-muted">campaigns the model learns from</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded p-3">
+                    <div class="small text-muted">Testing data — 20%</div>
+                    <div class="fs-4 fw-semibold">{{ info.testing_records }}</div>
+                    <div class="small text-muted">campaigns held back to measure performance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">5. The model</h2>
+        <p>
+            Implemented with <code>Perceptron</code> from scikit-learn, inside a
+            <code>Pipeline</code> that first applies a <code>StandardScaler</code>.
+        </p>
+        <p>
+            The scaling is not optional here. The three variables live on very different
+            ranges: the budget reaches 40, the duration reaches 60 and the channels only reach
+            6. The Perceptron adjusts weights proportional to the magnitude of each input, so
+            without scaling the duration would dominate the decision just for having larger
+            numbers. The Pipeline also guarantees that the scaler is fitted only with the
+            training data and that any value typed in the form receives the same transformation.
+        </p>
+        <p class="mb-0">
+            <strong>This model does not produce probabilities.</strong> Unlike Logistic
+            Regression, the Perceptron applies a step function and answers 0 or 1 with no
+            middle ground, so there is no confidence value to display.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">6. Classify a new campaign</h2>
+        <p class="small text-muted">
+            Enter the three planning variables and the model will classify the campaign.
+        </p>
+
+        <form method="post" class="row g-3">
+            <div class="col-md-4">
+                <label for="budget" class="form-label">Budget (millions of COP)</label>
+                <input type="number" step="any" min="0" required
+                       class="form-control {% if error %}is-invalid{% endif %}"
+                       id="budget" name="budget"
+                       value="{{ entered.budget }}" placeholder="For example: 25">
+            </div>
+            <div class="col-md-4">
+                <label for="duration_days" class="form-label">Duration (days)</label>
+                <input type="number" step="any" min="0" required
+                       class="form-control {% if error %}is-invalid{% endif %}"
+                       id="duration_days" name="duration_days"
+                       value="{{ entered.duration_days }}" placeholder="For example: 30">
+            </div>
+            <div class="col-md-4">
+                <label for="channels" class="form-label">Channels used</label>
+                <input type="number" step="any" min="0" required
+                       class="form-control {% if error %}is-invalid{% endif %}"
+                       id="channels" name="channels"
+                       value="{{ entered.channels }}" placeholder="For example: 4">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-brand">Classify campaign</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div class="alert alert-danger mt-3 mb-0">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+        <div class="alert {% if result.value == 1 %}alert-success{% else %}alert-warning{% endif %} mt-3 mb-0">
+            <h3 class="h6 mb-1">Predicted class</h3>
+            <p class="fs-4 fw-semibold mb-1">{{ result.value }} — {{ result.label }}</p>
+            <p class="mb-1">{{ result.meaning }}</p>
+            <p class="small mb-0">
+                For a campaign of {{ entered.budget }} million COP,
+                {{ entered.duration_days }} days and {{ entered.channels }} channels.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
 {% endblock %}
