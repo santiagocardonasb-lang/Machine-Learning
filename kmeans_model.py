@@ -34,7 +34,18 @@ PREPROCESSING = {
     "missing_values": int(dataset.isna().sum().sum()),
     "duplicates_removed": int(dataset.duplicated().sum()),
 }
-dataset = dataset.drop_duplicates().reset_index(drop=True)
+# ---- preprocessing ----
+PREPROCESSING = {
+    "initial_records": len(dataset),
+    "missing_values": int(dataset.isna().sum().sum()),
+    "repeated_pairs": int(dataset.duplicated().sum()),
+    "repeated_pairs_note": (
+        "Rows sharing the same magnitude and depth were kept. In a seismic catalogue each "
+        "event also has a date, a time and a location, so two distinct earthquakes can share "
+        "these two values. Removing them would discard real observations."
+    ),
+    "final_records": len(dataset),
+}
 PREPROCESSING["final_records"] = len(dataset)
 
 scaler = StandardScaler().fit(dataset[FEATURES])
