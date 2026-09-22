@@ -81,7 +81,7 @@ def build_chart(labels, centroids, title):
 
 def run():
     """Runs the three iterations and collects everything the page has to display."""
-    centroids = scaler.transform(INITIAL_CENTROIDS)
+    centroids = scale(INITIAL_CENTROIDS)
     iterations = []
 
     for number in range(1, N_ITERATIONS + 1):
@@ -129,7 +129,7 @@ def run():
         "n_clusters": N_CLUSTERS,
         "n_iterations": N_ITERATIONS,
         "initial_centroids": INITIAL_CENTROIDS.tolist(),
-        "initial_chart": build_chart(None, scaler.transform(INITIAL_CENTROIDS),
+        "initial_chart": build_chart(None, scale(INITIAL_CENTROIDS),
                                      "Initial state: the 100 events and the three starting centroids"),
         "iterations": iterations,
         "final_centroids": scaler.inverse_transform(centroids).round(2).tolist(),
