@@ -6,6 +6,8 @@ import content
 import model
 import logistic_model
 import perceptron_model
+import kmeans_manual
+import kmeans_model
 
 app = Flask(__name__)
 
@@ -176,6 +178,35 @@ def perceptron_metrics():
         info=perceptron_model.INFO,
         metrics=perceptron_model.METRICS,
         logistic=logistic_model.METRICS,
+    )
+
+
+@app.route("/unsupervised/concepts")
+def unsupervised_concepts():
+    return render_template("unsupervised_concepts.html", active="unsupervised")
+
+
+@app.route("/unsupervised/manual")
+def unsupervised_manual():
+    return render_template(
+        "unsupervised_manual.html",
+        active="unsupervised",
+        manual=kmeans_manual.MANUAL,
+    )
+
+
+@app.route("/unsupervised/application")
+def unsupervised_application():
+    return render_template(
+        "unsupervised_application.html",
+        active="unsupervised",
+        info=kmeans_model.INFO,
+        preprocessing=kmeans_model.PREPROCESSING,
+        selection=kmeans_model.K_SELECTION,
+        summary=kmeans_model.SUMMARY,
+        rows=kmeans_model.SAMPLE_ROWS,
+        cluster_chart=kmeans_model.CLUSTER_CHART,
+        selection_chart=kmeans_model.SELECTION_CHART,
     )
 
 if __name__ == "__main__":
