@@ -1,6 +1,202 @@
 {% extends "base.html" %}
+
 {% block title %}Unsupervised Concepts{% endblock %}
+
 {% block content %}
 <h1 class="page-title">Unsupervised Learning: Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+
+<p class="lead mb-4">
+    The theory behind K-Means, the algorithm used in this module to group seismic events.
+</p>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">What is unsupervised learning?</h2>
+                <p class="card-text mb-0">
+                    A family of algorithms that learn from data with no labels. Nobody tells the
+                    model what the correct answer is, so instead of predicting a known value it
+                    looks for structure that is already present in the data: groups, anomalies or
+                    relationships that were never pointed out.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title text-brand">
+                    How it differs from supervised learning
+                </h2>
+                <p class="card-text mb-0">
+                    A supervised model is trained with the right answer beside every record, and
+                    its accuracy can be measured against it. Here there is no right answer to
+                    compare with, so the quality of the result is judged by how compact and
+                    separated the groups are, and by whether they mean something in the context
+                    of the problem.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Clustering</h2>
+
+        <p>
+            Clustering is the unsupervised task of dividing a set of records into groups so that
+            the records inside a group resemble each other more than they resemble the records of
+            any other group. What counts as resembling is a distance: two records are similar when
+            the distance between their variables is small.
+        </p>
+
+        <p class="mb-0">
+            It is used to segment customers, to detect anomalies, to organise documents by theme,
+            and, as in this module, to identify populations inside a set of physical measurements.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">How K-Means works</h2>
+
+        <p>
+            K-Means divides the records into k groups, where k is chosen in advance. It repeats
+            two steps until the groups stop changing:
+        </p>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="border rounded p-3 h-100">
+                    <span class="badge text-bg-secondary mb-2">Step 1</span>
+
+                    <h3 class="h6 text-brand">Assignment</h3>
+
+                    <p class="small mb-0">
+                        The distance from every record to each of the k centroids is computed, and
+                        the record joins the group of the nearest one.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="border rounded p-3 h-100">
+                    <span class="badge text-bg-secondary mb-2">Step 2</span>
+
+                    <h3 class="h6 text-brand">Update</h3>
+
+                    <p class="small mb-0">
+                        Each centroid moves to the average position of the records that were
+                        assigned to it.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <p class="mb-0">
+            Moving the centroids changes which one is nearest for some records, so the assignment
+            is done again, and the cycle repeats. It stops when no record changes group, which
+            means the centroids no longer move.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">The centroid</h2>
+
+        <p>
+            The centroid is the centre of mass of a cluster: the average of the coordinates of all
+            its members. It is important to understand that it is <strong>not</strong> one of the
+            records. It is a computed point, and it can sit in a position where no real observation
+            exists.
+        </p>
+
+        <p class="mb-0">
+            Its coordinates describe the typical member of the group, which is what makes each
+            cluster interpretable. A centroid at magnitude 4.8 and depth 450 km describes a deep,
+            energetic earthquake even if no single event has exactly those two values.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Euclidean distance</h2>
+
+        <p>
+            The distance used to decide which centroid is nearest. For two variables it is the
+            straight line between the two points:
+        </p>
+
+        <p class="fs-5 text-center my-4">
+            <code>
+                d = &radic;( (x&#8321; - c&#8321;)&sup2; + (x&#8322; - c&#8322;)&sup2; )
+            </code>
+        </p>
+
+        <p class="mb-0">
+            Because it adds the differences of both variables without weighting them, the variable
+            with the largest range dominates the result. That is why the data has to be standardised
+            before clustering, and it is documented as a preprocessing step in the Application page.
+        </p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">Limitations</h2>
+
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Limitation</th>
+                        <th scope="col">What it means in practice</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row">k is chosen by the user</th>
+                        <td>
+                            The algorithm does not discover how many groups there are. It has to be
+                            decided beforehand, and justified with a measure such as the silhouette
+                            score.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Sensitive to the starting point</th>
+                        <td>
+                            Different initial centroids can lead to different results. Running the
+                            algorithm several times and keeping the best one reduces the risk.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Sensitive to the scale</th>
+                        <td>
+                            Without standardising, the variable with the widest range decides every
+                            assignment on its own.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Assumes round groups</th>
+                        <td>
+                            It looks for roughly spherical clusters of similar size. It performs
+                            poorly on elongated or nested shapes.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
