@@ -1,6 +1,291 @@
 {% extends "base.html" %}
-{% block title %}Unsupervised Concepts{% endblock %}
+
+{% block title %}Clustering Application{% endblock %}
+
 {% block content %}
-<h1 class="page-title">Unsupervised Learning: Concepts</h1>
-<div class="alert alert-secondary">This section is under construction.</div>
+<h1 class="page-title">Clustering Application</h1>
+
+<p class="lead mb-4">
+    K-Means implemented with scikit-learn over {{ info.records }} seismic events.
+</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. Dataset and justification</h2>
+        <p>
+            Seismic catalogues are a natural case for clustering: every event is described by
+            objective physical measurements, there are no labels saying what type of earthquake it
+            is, and seismology already knows that earthquakes group into populations by depth. That
+            makes it possible to check whether the algorithm recovers a structure that exists
+            independently of it.
+        </p>
+        <div class="table-responsive mb-3">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Variable</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Why it was chosen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><code>magnitude</code></th>
+                        <td>Richter scale</td>
+                        <td>Measures the energy released. It separates frequent small earthquakes
+                            from rare large ones.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><code>depth_km</code></th>
+                        <td>Kilometres</td>
+                        <td>The depth of the hypocentre. It is the variable seismology uses to
+                            classify earthquakes, and it reflects which tectonic process generated
+                            them.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            <span class="badge text-bg-success fs-6">{{ info.records }} records</span>
+            <span class="badge text-bg-secondary fs-6">2 numerical variables</span>
+            <span class="badge text-bg-secondary fs-6">Loaded from CSV with pandas</span>
+        </p>
+        <p class="small text-muted mb-0"><strong>Source.</strong> {{ info.source }}</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">2. Preprocessing</h2>
+        <div class="table-responsive mb-3">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Step</th>
+                        <th scope="col">Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Records read from the CSV</th>
+                        <td>{{ preprocessing.initial_records }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Missing values found</th>
+                        <td>{{ preprocessing.missing_values }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Duplicate rows removed</th>
+                        <td>{{ preprocessing.duplicates_removed }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Records used for clustering</th>
+                        <td>{{ preprocessing.final_records }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <h3 class="h6">Standardisation</h3>
+        <p class="mb-0">{{ preprocessing.scaling }}</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">3. Choosing the number of clusters</h2>
+        <p>
+            K-Means does not discover how many groups exist: k has to be decided in advance. Rather
+            than assuming a value, the silhouette score was computed for every k between 2 and 8,
+            and the one that maximises it was selected.
+        </p>
+        <img src="data:image/png;base64,{{ selection_chart }}" class="img-fluid mb-3"
+             alt="Silhouette score for each number of clusters between 2 and 8">
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">k</th>
+                        <th scope="col">Silhouette score</th>
+                        <th scope="col">Inertia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in selection %}
+                    <tr {% if row.k == info.best_k %}class="table-success fw-semibold"{% endif %}>
+                        <td>{{ row.k }}</td>
+                        <td>{{ row.silhouette }}</td>
+                        <td>{{ row.inertia }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-3 mb-0">
+            The maximum falls at <strong>k = {{ info.best_k }}</strong>. The inertia keeps dropping
+            as k grows, which is why it cannot be used on its own to decide: splitting the data into
+            more groups always makes them tighter, even when the extra groups mean nothing.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">4. Model configuration</h2>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Parameter</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><code>n_clusters</code></th>
+                        <td>{{ info.n_clusters }}</td>
+                        <td>The value chosen by the silhouette score above.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><code>n_init</code></th>
+                        <td>{{ info.n_init }}</td>
+                        <td>The algorithm runs {{ info.n_init }} times from different random starts
+                            and keeps the best one, which avoids settling on a local minimum.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><code>random_state</code></th>
+                        <td>{{ info.random_state }}</td>
+                        <td>Fixes those random starts so the result is reproducible and the figures
+                            reported here match what the application shows.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">5. The clusters</h2>
+        <img src="data:image/png;base64,{{ cluster_chart }}" class="img-fluid mb-3"
+             alt="Seismic events grouped into clusters, with the centroid of each one">
+        <p class="small text-muted mb-0">
+            The depth axis is inverted so it grows downwards, the way a seismic cross section is
+            read. The crosses mark the centroids.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">6. Summary by cluster</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Cluster</th>
+                        <th scope="col">Events</th>
+                        <th scope="col">Share</th>
+                        <th scope="col">Centroid</th>
+                        <th scope="col">Magnitude range</th>
+                        <th scope="col">Depth range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in summary %}
+                    <tr>
+                        <th scope="row">{{ row.cluster }}</th>
+                        <td>{{ row.records }}</td>
+                        <td>{{ row.share }}%</td>
+                        <td>{{ row.centroid_magnitude }} · {{ row.centroid_depth }} km</td>
+                        <td>{{ row.magnitude_min }} to {{ row.magnitude_max }}</td>
+                        <td>{{ row.depth_min }} to {{ row.depth_max }} km</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">7. Evaluation: silhouette score</h2>
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="border rounded p-3 text-center">
+                    <div class="small text-muted">Silhouette score</div>
+                    <div class="fs-3 fw-bold text-brand">{{ info.silhouette }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded p-3 text-center">
+                    <div class="small text-muted">Inertia</div>
+                    <div class="fs-3 fw-bold text-brand">{{ info.inertia }}</div>
+                </div>
+            </div>
+        </div>
+        <p>
+            The silhouette score measures, for each event, how close it is to its own cluster
+            compared with the nearest neighbouring cluster. It ranges from -1 to 1: values near 1
+            mean compact and well separated groups, values near 0 mean groups that touch each
+            other, and negative values mean records that were probably assigned to the wrong group.
+        </p>
+        <p class="mb-0">
+            A score of {{ info.silhouette }} indicates a clear structure. The groups are not
+            perfectly isolated, which is expected: the boundary between shallow and intermediate
+            events is gradual in nature, and a few earthquakes sit between the two populations.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">8. What each cluster means</h2>
+        <div class="list-group list-group-flush">
+            {% for row in summary %}
+            <div class="list-group-item px-0">
+                <strong class="text-brand">Cluster {{ row.cluster }}</strong>
+                — centroid at magnitude {{ row.centroid_magnitude }} and
+                {{ row.centroid_depth }} km, {{ row.records }} events.
+                <p class="small text-muted mb-0 mt-1">{{ row.meaning }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="mt-3 mb-0">
+            The three groups match seismic populations that are described independently in the
+            literature. That agreement is the real validation of the result: the silhouette score
+            says the groups are geometrically sound, and the domain says they are physically
+            meaningful.
+        </p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">9. Records with their assigned cluster</h2>
+        <p class="small text-muted">First 20 events of the dataset.</p>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Magnitude</th>
+                        <th scope="col">Depth (km)</th>
+                        <th scope="col">Cluster</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.magnitude }}</td>
+                        <td>{{ row.depth_km }}</td>
+                        <td><span class="badge text-bg-secondary">{{ row.cluster }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
