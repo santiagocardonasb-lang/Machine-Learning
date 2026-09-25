@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Manual K-Means Exercise{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Manual K-Means Exercise</h1>
+
+<p class="lead mb-4">
+    Three iterations of the algorithm computed step by step over {{ manual.records }} seismic
+    events, without using the K-Means implementation of scikit-learn.
+</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. The data</h2>
+
+        <p>
+            {{ manual.records }} seismic events with two numerical variables. Each record is one
+            earthquake recorded by the seismic network.
+        </p>
+
+        <div class="table-responsive mb-3">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Variable</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Meaning</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th scope="row"><code>magnitude</code></th>
+                        <td>Richter scale</td>
+                        <td>
+                            The energy released by the earthquake. The scale is logarithmic, so one
+                            extra unit means about thirty times more energy.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row"><code>depth_km</code></th>
+                        <td>Kilometres</td>
+                        <td>
+                            How deep the hypocentre is. Seismology distinguishes shallow events
+                            below 70 km, intermediate ones down to 300 km, and deep ones beyond
+                            that.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="small text-muted mb-0">
+            <strong>Source.</strong> {{ manual.source }}
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">2. Initial centroids</h2>
+
+        <p>
+            Three starting points were chosen deliberately away from the natural groups, so the
+            movement of the centroids can be observed across the three iterations. Good starting
+            points would converge immediately and there would be nothing to watch.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Centroid</th>
+                        <th scope="col">Magnitude</th>
+                        <th scope="col">Depth (km)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for centroid in manual.initial_centroids %}
+                    <tr>
+                        <th scope="row">C{{ loop.index0 }}</th>
+                        <td>{{ centroid[0] }}</td>
+                        <td>{{ centroid[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">3. Starting point</h2>
+
+        <img
+            src="data:image/png;base64,{{ manual.initial_chart }}"
+            class="img-fluid"
+            alt="The 100 seismic events and the three initial centroids"
+        >
+    </div>
+</div>
+
+{% for iteration in manual.iterations %}
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            Iteration {{ iteration.number }}
+        </h2>
+
+        <div class="row g-3 mb-4">
+            {% for size in iteration.sizes %}
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <div class="small text-muted">
+                        Cluster {{ loop.index0 }}
+                    </div>
+
+                    <div class="fs-4 fw-semibold">
+                        {{ size }}
+                    </div>
+
+                    <div class="small text-muted">
+                        events assigned
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3 class="h6">Distances and assignment</h3>
+
+        <p class="small text-muted">
+            Euclidean distance from every event to the three centroids, computed on the
+            standardised variables. Each event joins the cluster of its smallest distance.
+        </p>
+
+        <div
+            class="table-responsive mb-4"
+            style="max-height: 420px; overflow-y: auto;"
+        >
+            <table class="table table-sm table-striped mb-0">
+
+                <thead
+                    class="table-light"
+                    style="position: sticky; top: 0;"
+                >
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Magnitude</th>
+                        <th scope="col">Depth</th>
+                        <th scope="col">d to C0</th>
+                        <th scope="col">d to C1</th>
+                        <th scope="col">d to C2</th>
+                        <th scope="col">Cluster</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in iteration.rows %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.magnitude }}</td>
+                        <td>{{ row.depth_km }}</td>
+                        <td>{{ row.d0 }}</td>
+                        <td>{{ row.d1 }}</td>
+                        <td>{{ row.d2 }}</td>
+
+                        <td>
+                            <span class="badge text-bg-secondary">
+                                {{ row.cluster }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+        <h3 class="h6">Updated centroids</h3>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-sm table-bordered mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Centroid</th>
+                        <th scope="col">Before</th>
+                        <th scope="col">After</th>
+                        <th scope="col">Distance moved</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for centroid in iteration.centroids_after %}
+                    <tr>
+                        <th scope="row">C{{ loop.index0 }}</th>
+
+                        <td>
+                            {{ iteration.centroids_before[loop.index0][0] }}
+                            ·
+                            {{ iteration.centroids_before[loop.index0][1] }} km
+                        </td>
+
+                        <td>
+                            {{ centroid[0] }}
+                            ·
+                            {{ centroid[1] }} km
+                        </td>
+
+                        <td>
+                            {{ iteration.shift[loop.index0] }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+        <img
+            src="data:image/png;base64,{{ iteration.chart }}"
+            class="img-fluid"
+            alt="Clusters and centroids after iteration {{ iteration.number }}"
+        >
+
+    </div>
+</div>
+{% endfor %}
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            4. Variance within the clusters
+        </h2>
+
+        <p class="small text-muted">
+            The sum of the squared distances from every event to the centroid of its own cluster.
+            It measures how compact the groups are: the smaller it gets, the tighter the grouping.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Iteration</th>
+                        <th scope="col">Cluster 0</th>
+                        <th scope="col">Cluster 1</th>
+                        <th scope="col">Cluster 2</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for iteration in manual.iterations %}
+                    <tr>
+                        <th scope="row">{{ iteration.number }}</th>
+
+                        {% for value in iteration.variance_per_cluster %}
+                        <td>{{ value }}</td>
+                        {% endfor %}
+
+                        <td class="fw-semibold">
+                            {{ iteration.variance_total }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+        <p class="mt-3 mb-0">
+            The variance falls sharply between the first and the second iteration and then barely
+            changes. That is what convergence looks like: the first pass corrects the poor initial
+            positions, and from there the centroids only make small adjustments. The distance moved
+            by the centroids tells the same story, dropping to zero by the third iteration.
+        </p>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <h2 class="h5 card-title text-brand">
+            5. Final result
+        </h2>
+
+        <div class="table-responsive mb-3">
+            <table class="table table-bordered mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Cluster</th>
+                        <th scope="col">Centroid</th>
+                        <th scope="col">Characteristics</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <th scope="row">0</th>
+
+                        <td>
+                            {{ manual.final_centroids[0][0] }}
+                            ·
+                            {{ manual.final_centroids[0][1] }} km
+                        </td>
+
+                        <td>
+                            Shallow and low magnitude events. The most numerous group, consistent
+                            with the crustal seismicity of the fault systems.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">1</th>
+
+                        <td>
+                            {{ manual.final_centroids[1][0] }}
+                            ·
+                            {{ manual.final_centroids[1][1] }} km
+                        </td>
+
+                        <td>
+                            Intermediate depth and moderate magnitude, around 150 km. Matches the
+                            behaviour of the Bucaramanga seismic nest.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">2</th>
+
+                        <td>
+                            {{ manual.final_centroids[2][0] }}
+                            ·
+                            {{ manual.final_centroids[2][1] }} km
+                        </td>
+
+                        <td>
+                            Deep and energetic events. The smallest group: at that depth only the
+                            larger earthquakes are detected.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+        <p class="mb-0">
+            The three groups the algorithm found are not an artefact of the method. They correspond
+            to seismic populations that are documented independently, which is the strongest
+            evidence that the clustering is meaningful and not just a partition of the plane.
+        </p>
+
+    </div>
+</div>
+
+{% endblock %}
