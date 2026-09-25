@@ -156,8 +156,8 @@ def _build_selection_chart():
 CLUSTER_CHART = _build_cluster_chart()
 SELECTION_CHART = _build_selection_chart()
 
-SAMPLE_ROWS = dataset.head(20).to_dict("records")
-
+# Every record with its assigned cluster: the page shows the full table, not a sample
+RECORD_ROWS = dataset.to_dict("records")
 
 if __name__ == "__main__":
     print("Preprocessing:", PREPROCESSING)

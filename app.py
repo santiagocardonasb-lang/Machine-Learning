@@ -204,7 +204,7 @@ def unsupervised_application():
         preprocessing=kmeans_model.PREPROCESSING,
         selection=kmeans_model.K_SELECTION,
         summary=kmeans_model.SUMMARY,
-        rows=kmeans_model.SAMPLE_ROWS,
+        rows=kmeans_model.RECORD_ROWS,
         cluster_chart=kmeans_model.CLUSTER_CHART,
         selection_chart=kmeans_model.SELECTION_CHART,
     )
