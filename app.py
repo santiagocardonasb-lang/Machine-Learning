@@ -8,6 +8,8 @@ import logistic_model
 import perceptron_model
 import kmeans_manual
 import kmeans_model
+import rl_environment
+import rl_model
 
 app = Flask(__name__)
 
@@ -208,6 +210,32 @@ def unsupervised_application():
         cluster_chart=kmeans_model.CLUSTER_CHART,
         selection_chart=kmeans_model.SELECTION_CHART,
     )
+
+
+@app.route("/reinforcement/concepts")
+def rl_concepts():
+    return render_template("rl_concepts.html", active="reinforcement")
+
+
+@app.route("/reinforcement/application", methods=["GET", "POST"])
+def rl_application():
+    result = None
+
+    if request.method == "POST":
+        result = rl_model.train()
+
+    return render_template(
+        "rl_application.html",
+        active="reinforcement",
+        grid=rl_environment.GRID,
+        legend=rl_environment.LEGEND,
+        cell_css=rl_environment.CELL_CSS,
+        rewards=rl_environment.REWARD_TABLE,
+        parameters=rl_model.PARAMETERS,
+        actions=rl_environment.ACTION_NAMES,
+        result=result,
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
