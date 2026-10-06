@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Reinforcement Learning Application{% endblock %}
+
+{% macro draw_grid(route) %}
+<div class="table-responsive">
+    <table class="rl-grid">
+        {% for row in grid %}
+        {% set row_number = loop.index0 %}
+        <tr>
+            {% for symbol in row %}
+            <td class="{{ cell_css[symbol] }} {% if (row_number, loop.index0) in route %}on-route{% endif %}">
+                {{ symbol }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endmacro %}
+
+{% block content %}
+<h1 class="page-title"><i class="bi bi-robot text-brand"></i> Q-Learning in a 10 × 10 Environment</h1>
+
+<p class="lead mb-4">
+    The agent starts at A and must reach T. It learns the route on its own through trial and error,
+    with an SGDRegressor that estimates the value of each action.
+</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">1. The environment</h2>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                {{ draw_grid([]) }}
+            </div>
+
+            <div class="col-lg-6">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Symbol</th>
+                                <th scope="col">Element</th>
+                                <th scope="col">Cells</th>
+                                <th scope="col">Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in legend %}
+                            <tr>
+                                <td class="text-center fw-bold {{ item.css }}">{{ item.symbol }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.count }}</td>
+                                <td>{{ item.meaning }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="small text-muted mt-3 mb-0">
+                    The shortest route has 18 moves, but it crosses the danger zone at (4, 3). The
+                    route that avoids every danger zone needs 20. The agent has to learn that saving
+                    two moves is not worth the penalty.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">2. Reward system</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Event</th>
+                        <th scope="col">Reward</th>
+                        <th scope="col">Agent position</th>
+                        <th scope="col">Episode ends</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in rewards %}
+                    <tr>
+                        <td>{{ item.event }}</td>
+                        <td class="fw-semibold">{{ "%+d"|format(item.reward) }}</td>
+                        <td>{{ item.position }}</td>
+                        <td>{{ item.ends }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="small text-muted mt-3 mb-0">
+            The −1 per move makes short routes worth more. Collisions cost more than a move because
+            they waste a step without progress, and a danger zone costs more than the two extra moves
+            needed to go around it.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">3. Training configuration</h2>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Parameter</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in parameters %}
+                    <tr>
+                        <th scope="row">{{ item.name }}</th>
+                        <td>{{ item.value }}</td>
+                        <td>{{ item.purpose }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">4. Train the agent</h2>
+
+        <p>
+            Each episode starts at A. The agent chooses its actions with epsilon-greedy, and at the end
+            of the episode <code>partial_fit()</code> updates the Q-values with every transition it
+            observed. After training, the policy is evaluated without exploration.
+        </p>
+
+        <form method="post" action="{{ url_for('rl_application') }}">
+            <button type="submit" class="btn btn-brand">
+                <i class="bi bi-play-fill"></i> Train Agent
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if result %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">5. Training results</h2>
+
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Total episodes</div>
+                    <div class="fs-4 fw-semibold">{{ result.episodes }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Successful episodes</div>
+                    <div class="fs-4 fw-semibold">{{ result.successes }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Success percentage</div>
+                    <div class="fs-4 fw-semibold">{{ result.success_rate }} %</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Average reward</div>
+                    <div class="fs-4 fw-semibold">{{ result.average_reward }}</div>
+                    <div class="small text-muted">last 100: {{ result.last_100_average }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Final epsilon</div>
+                    <div class="fs-4 fw-semibold">{{ result.final_epsilon }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Moves in final evaluation</div>
+                    <div class="fs-4 fw-semibold">{{ result.moves }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Total reward in final evaluation</div>
+                    <div class="fs-4 fw-semibold">{{ result.total_reward }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-3 text-center h-100">
+                    <div class="small text-muted">Goal reached</div>
+                    <div class="fs-4 fw-semibold">{{ "Yes" if result.reached_goal else "No" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-muted mt-3 mb-0">
+            The average reward is negative because it includes the first episodes, when the agent
+            explored at random. The average of the last 100 episodes shows what it reached after
+            learning.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">6. Learned path</h2>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                {{ draw_grid(result.path) }}
+            </div>
+
+            <div class="col-lg-6">
+                {% if result.reached_goal %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> The agent reached T in {{ result.moves }} moves
+                    with a total reward of {{ result.total_reward }}.
+                </div>
+                {% else %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle"></i> The agent did not reach T within the step limit.
+                </div>
+                {% endif %}
+
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        Danger zones entered <span class="fw-semibold">{{ result.dangers_entered }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        Collisions with walls or edges <span class="fw-semibold">{{ result.collisions }}</span>
+                    </li>
+                </ul>
+
+                <p class="small mb-0">
+                    <strong>Route:</strong> {{ result.path|join(" → ") }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">7. Step-by-step evaluation</h2>
+
+        <p class="small text-muted">
+            The trained policy, without exploration: in each state the agent takes the action with
+            the highest Q-value.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Step</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Next state</th>
+                        <th scope="col">Cell type</th>
+                        <th scope="col">Reward</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for step in result.steps %}
+                    <tr>
+                        <td>{{ step.number }}</td>
+                        <td>{{ step.state }}</td>
+                        <td>{{ step.action }}</td>
+                        <td>{{ step.next_state }}</td>
+                        <td>{{ step.cell_type }}</td>
+                        <td>{{ step.reward }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5 card-title text-brand">8. Learned Q-values</h2>
+
+        <p class="small text-muted">
+            The four values the model predicts for each state the agent can occupy. The highest value,
+            in bold, is the action the policy chooses.
+        </p>
+
+        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+            <table class="table table-sm table-striped mb-0">
+                <thead class="table-light" style="position: sticky; top: 0;">
+                    <tr>
+                        <th scope="col">State</th>
+                        <th scope="col">Cell</th>
+                        {% for action in actions %}
+                        <th scope="col">{{ action }}</th>
+                        {% endfor %}
+                        <th scope="col">Best action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result.q_values %}
+                    <tr>
+                        <td>{{ row.state }}</td>
+                        <td>{{ row.symbol }}</td>
+                        {% for value in row.action_values %}
+                        <td class="{% if loop.index0 == row.best_index %}fw-bold{% endif %}">{{ "%.2f"|format(value) }}</td>
+                        {% endfor %}
+                        <td>{{ row.best_action }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
