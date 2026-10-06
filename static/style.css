@@ -44,3 +44,53 @@ body {
     font-weight: 600;
     color: #fff;
 }
+
+/* Reinforcement Learning environment */
+.rl-grid {
+    border-collapse: separate;
+    border-spacing: 3px;
+}
+
+.rl-grid td {
+    width: 42px;
+    height: 42px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+.cell-start {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.cell-target {
+    background-color: var(--brand);
+    color: #fff;
+}
+
+.cell-path {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.cell-wall {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.cell-danger {
+    background-color: #f8d7da;
+    color: #b02a37;
+}
+
+/* Cells of the learned route keep their symbol and get a highlight */
+.rl-grid td.on-route {
+    box-shadow: inset 0 0 0 3px var(--brand-accent);
+}
+
+.rl-grid td.cell-path.on-route {
+    background-color: #fde2c8;
+    color: #000;
+}
